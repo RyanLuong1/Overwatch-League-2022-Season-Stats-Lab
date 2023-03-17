@@ -9,6 +9,7 @@ function StagePicker() {
                 Stage
             </p>
             <select name="stages">
+                <option value="All"> All </option>
                 <option value="Kickoff Clash: Qualifiers"> Kickoff Clash: Qualifiers </option>
                 <option value="Kickoff Clash: Tournament"> Kickoff Clash: Tournament </option>
                 <option value="Midseason Madness: Qualifiers"> Midseason Madness: Qualifiers </option>
