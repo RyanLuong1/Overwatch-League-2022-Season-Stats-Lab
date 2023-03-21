@@ -6,7 +6,7 @@ app = Flask(__name__)
 def hello_world():
     return 'Hello World!'
 
-@app.route('/bucket')
+@app.route('/overwatch_league/2022/map_types/')
 def list_bucket():
     client = get_bucket()
     client_response = client.list_buckets()

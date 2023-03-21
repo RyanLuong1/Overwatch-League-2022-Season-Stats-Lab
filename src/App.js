@@ -3,13 +3,16 @@ import './App.css';
 import StagePicker from "./components/StagePicker.tsx"
 import TeamPicker from './components/TeamPicker.tsx';
 import MapPicker from './components/MapPicker.tsx';
+import MapTypePicker from './components/MapTypePicker.tsx';
+
+
 
 function App() {
   return (
     <div className="App">
       <StagePicker></StagePicker>
       <TeamPicker></TeamPicker>
-      <MapPicker></MapPicker>
+      <MapTypePicker mapCategories={["assult", "control", "hybrid", "payload", "push"]}></MapTypePicker>
     </div>
   );
 }
