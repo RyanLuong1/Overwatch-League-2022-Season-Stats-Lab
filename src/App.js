@@ -12,7 +12,7 @@ function App() {
     <div className="App">
       <StagePicker></StagePicker>
       <TeamPicker></TeamPicker>
-      <MapTypePicker mapCategories={["assult", "control", "hybrid", "payload", "push"]}></MapTypePicker>
+      <MapTypePicker mapCategories={["assult", "control", "hybrid", "payload", "push"]} isCheckedArray={["true", "true", "true", "true", "true"]}></MapTypePicker>
     </div>
   );
 }
