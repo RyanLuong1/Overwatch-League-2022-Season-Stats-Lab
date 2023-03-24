@@ -3,55 +3,58 @@ import Select from 'react-select'
 import { TextField, Autocomplete, Checkbox } from '@mui/material';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import { MapType } from './MapType';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-export interface MapType {
-    value: string;
-    label: string;
-    index: number
-}
+const MapTypePicker = (props: {listOfMapType: MapType[], parentFunction: Function}) => {
+    const [mapTypePicks, updateMapTypePicks] = useState<string[]>(["assult", "control", "hybrid", "payload", "push"])
 
-const mapTypes: readonly MapType[] = [
-    {value: "assult", label: "Assult", index: 0},
-    {value: "control", label: "Control", index: 1},
-    {value: "hybrid", label: "Hybrid", index: 2},
-    {value: "payload", label: "Payload", index: 3},
-    {value: "push", label: "Push", index: 4},
-]
-
-const MapTypePicker = ({mapCategories, isCheckedArray}: {mapCategories: Array<string>, isCheckedArray: Array<boolean>}) => {
-    const [mapTypeSet, updateMapTypeSet] = useState<Array<string>>(mapCategories);
-    const [isChecked, updateIsChecked] = useState<Array<boolean>>(isCheckedArray)
-    console.log(mapTypeSet)
-
-    const updateMapTypeSetHelper = ({mapType} : {mapType: string}) => {
-        if (mapTypeSet.includes(mapType)) {
-            updateMapTypeSet(mapTypeSet.filter(type => type !== mapType))
+    const updateMapTypePicksHelper = (name, clicked) => {
+        console.log(name, clicked)
+        if (clicked !== true) {
+            updateMapTypePicks(mapTypePicks.filter(mapTypeName => mapTypeName !== name))
         }
         else {
-            updateMapTypeSet([...mapTypeSet, mapType])
+            updateMapTypePicks([...mapTypePicks, name])
+            }
         }
-    }
 
-    const updateIsCheckedHelper = ({index, checkedState}: {index: number, checkedState: boolean}) => {
-        updateIsChecked((isChecked) => {
-            return isChecked.map((c, i) => {
-                if (i === index) {
-                    return checkedState
-                }
-                return c
-            } )
-        })
-    }
+    // useEffect(() => {
+    //     updateMapTypePicksHelper(props.listOfMapType)
+    // }, [])
+    // const [mapTypeSet, updateMapTypeSet] = useState<Array<string>>(mapCategories);
+    // const [isChecked, updateIsChecked] = useState<Array<boolean>>(isCheckedArray)
+    // console.log(mapTypeSet)
 
-    const updateBothMapTypeSetAndIsChecked = ({mapType, index, checkedState}: {mapType: string, index: number, checkedState: boolean}) => {
-        console.log(mapType)
+    // const updateMapTypeSetHelper = ({mapType} : {mapType: string}) => {
+    //     if (mapTypeSet.includes(mapType)) {
+    //         updateMapTypeSet(mapTypeSet.filter(type => type !== mapType))
+    //     }
+    //     else {
+    //         updateMapTypeSet([...mapTypeSet, mapType])
+    //     }
+    // }
+
+    // const updateIsCheckedHelper = ({index, checkedState}: {index: number, checkedState: boolean}) => {
+    //     updateIsChecked((isChecked) => {
+    //         return isChecked.map((c, i) => {
+    //             if (i === index) {
+    //                 return checkedState
+    //             }
+    //             return c
+    //         } )
+    //     })
+    // }
+
+    // const updateBothMapTypeSetAndIsChecked = ({mapType, index, checkedState}: {mapType: string, index: number, checkedState: boolean}) => {
+    //     updateMapTypeSetHelper(mapType)
+    //     updateIsCheckedHelper(index, checkedState)
         // updateMapTypeSetHelper(mapType)
         // updateIsCheckedHelper(index, checkedState)
 
-    }
+    // }
 
     // const update = ({mapType, index, checkedState}: {mapType: string, index: number, checkedState: boolean}) => {
     //     console.log(mapTypeSet)
@@ -67,6 +70,10 @@ const MapTypePicker = ({mapCategories, isCheckedArray}: {mapCategories: Array<st
     //     </select>
     // )
     // fetch("http://127.0.0.1:5000/bucket").then(response => response.text()).then(text => console.log(text))
+    const handleChange = (event, mapTypeName, clicked) => {
+        updateMapTypePicksHelper(mapTypeName, clicked)
+        props.parentFunction(mapTypeName, clicked)
+    }
     return(
         <div>
             <p>
@@ -76,25 +83,24 @@ const MapTypePicker = ({mapCategories, isCheckedArray}: {mapCategories: Array<st
             <Autocomplete
             multiple
             id="checkboxes-tags-demo"
-            options={mapTypes}
+            options={props.listOfMapType}
             disableCloseOnSelect
             getOptionLabel={(mapType) => mapType.value}
             renderOption={(props, mapType, { selected }) => (
-                <li {...props} key={mapType.index}>
+                <li {...props}>
                 <Checkbox
                     icon={icon}
                     checkedIcon={checkedIcon}
                     style={{ marginRight: 8 }}
-                    defaultChecked={true}
-                    id={(mapType.index).toString()}
-                    onChange={(event, isChecked) => updateBothMapTypeSetAndIsChecked(mapType.value, mapType.index, isChecked)}
+                    checked={mapType.checkedState}
+                    onChange={(event, clicked) => handleChange(event, mapType.value, clicked)}
                 />
                 {mapType.value}
                 </li>
             )}
             style={{ width: 500 }}
             renderInput={(params) => (
-                <TextField {...params} label={mapTypeSet.length === 5 ? "All" : "Multiple Values"}/>
+                <TextField {...params} label={props.listOfMapType.length === 5 ? "All" : "Multiple Values"}/>
             )}
             />
             </div>
