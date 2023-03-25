@@ -12,11 +12,10 @@ const listOfMapType: MapType[] = [
 
 const GlobalHeroUsage = () => {
     const [arrayOfMapType, updateArrayOfMapType] = useState<MapType[]>(listOfMapType)
-    console.log(arrayOfMapType)
-    const updateArrayOfMapTypeHelper = (mapTypeName: string, clicked: boolean): void => {
+    const updateArrayOfMapTypeHelper = (newArray: string[]): void => {
         updateArrayOfMapType(prevState => prevState.map(mapType => ({
             ...mapType,
-            checkedState: mapTypeName === mapType.value ? clicked : mapType.checkedState
+            checkedState: newArray.includes(mapType.value) ? true : false
         })))
     }
     return(
