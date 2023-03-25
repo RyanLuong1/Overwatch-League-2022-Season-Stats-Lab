@@ -1,26 +1,32 @@
 import React, {useState, useEffect} from 'react'
 import MapTypePicker from "./MapTypePicker.tsx"
 import { MapType } from './MapType';
+import { Team } from './Team'
 
 const listOfMapType: MapType[] = [
-    {value: "assult", label: "Assult", index: 0, checkedState: true},
-    {value: "control", label: "Control", index: 1, checkedState: true},
-    {value: "hybrid", label: "Hybrid", index: 2, checkedState: true},
-    {value: "payload", label: "Payload", index: 3, checkedState: true},
-    {value: "push", label: "Push", index: 4, checkedState: true},
+    {typeName: "assult", checkedState: true},
+    {typeName: "control", checkedState: true},
+    {typeName: "hybrid", checkedState: true},
+    {typeName: "payload", checkedState: true},
+    {typeName: "push", checkedState: true},
   ]
+
+const listOfTeam: Team[] = [
+    {teamName: "Atlanta Reign", checkedState: true},
+]
 
 const GlobalHeroUsage = () => {
     const [arrayOfMapType, updateArrayOfMapType] = useState<MapType[]>(listOfMapType)
     const updateArrayOfMapTypeHelper = (newArray: string[]): void => {
         updateArrayOfMapType(prevState => prevState.map(mapType => ({
             ...mapType,
-            checkedState: newArray.includes(mapType.value) ? true : false
+            checkedState: newArray.includes(mapType.typeName) ? true : false
         })))
+        console.log(arrayOfMapType)
     }
     return(
         <div>
-            <MapTypePicker listOfMapType={arrayOfMapType} parentFunction={updateArrayOfMapTypeHelper}/>
+            <MapTypePicker parentFunction={updateArrayOfMapTypeHelper}/>
         </div>
     )
 }

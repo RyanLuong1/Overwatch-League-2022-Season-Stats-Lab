@@ -1,6 +1,4 @@
 export interface MapType {
-    value: string;
-    label: string;
-    index: number
+    typeName: string;
     checkedState: boolean
 }

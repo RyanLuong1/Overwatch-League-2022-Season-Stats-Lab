@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select'
 import { TextField, Autocomplete, Checkbox } from '@mui/material';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import { MapType } from './MapType';
 
-const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-const checkedIcon = <CheckBoxIcon fontSize="small" />;
-
-const MapTypePicker = (props: {listOfMapType: MapType[], parentFunction: Function}) => {
+const MapTypePicker = (props: {parentFunction: Function}) => {
     const [mapTypePicks, updateMapTypePicks] = useState<string[]>(["assult", "control", "hybrid", "payload", "push"])
 
     const updateMapTypePicksHelper = (newArray) => {
