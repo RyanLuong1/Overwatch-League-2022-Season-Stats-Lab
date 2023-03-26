@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Select from 'react-select'
 import { TextField, Autocomplete, Checkbox } from '@mui/material';
 
-const MapTypePicker = (props: {parentFunction: Function}) => {
-    const [mapTypePicks, updateMapTypePicks] = useState<string[]>(["assult", "control", "hybrid", "payload", "push"])
+const MapTypePicker = (props: {listOfMapTypeNames: string[], parentFunction: Function}) => {
+    const [mapTypePicks, updateMapTypePicks] = useState<string[]>(props.listOfMapTypeNames)
 
     const updateMapTypePicksHelper = (newArray) => {
         updateMapTypePicks([...newArray])
@@ -23,12 +23,12 @@ const MapTypePicker = (props: {parentFunction: Function}) => {
             <Autocomplete
             multiple
             id="checkboxes-tags-demo"
-            options={["assult", "control", "hybrid", "payload", "push"]}
+            options={props.listOfMapTypeNames}
             disableCloseOnSelect
             getOptionLabel={(mapType) => mapType}
             isOptionEqualToValue={(option, value) => option === value}
             onChange={(event, newArray) => handleChange(newArray)}
-            defaultValue={["assult", "control", "hybrid", "payload", "push"]}
+            defaultValue={props.listOfMapTypeNames}
             style={{ width: 500 }}
             renderInput={(params) => (
                 <TextField {...params} label={mapTypePicks.length === 5 ? "All" : "Multiple Values"}/>
