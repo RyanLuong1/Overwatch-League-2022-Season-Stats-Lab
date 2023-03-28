@@ -52,6 +52,7 @@ const arrayOfMapTypesNames: string[] = listOfMapTypes.map((mapType) =>
     mapType.typeName
 )
 
+
 const arrayOfTeamNames: string[] = listOfTeams.map((team) =>
     team.teamName
 )
@@ -88,7 +89,7 @@ const GlobalHeroUsage = () => {
     return(
         <div>
             <TeamPicker listOfTeamNames={arrayOfTeamNames} parentFunction={updateArrayOfTeamsHelper}/>
-            <MapTypePicker listofMapTypeNames={arrayOfMapTypesNames} parentFunction={updateArrayOfMapTypesHelper}/>
+            <MapTypePicker listOfMapTypeNames={arrayOfMapTypesNames} parentFunction={updateArrayOfMapTypesHelper}/>
             <StagePicker listOfStageNames={arrayOfStageNames} parentFunction={updateArrayOfStagesHelper}/>
         </div>
     )

@@ -4,7 +4,6 @@ import { TextField, Autocomplete, Checkbox } from '@mui/material';
 
 const MapTypePicker = (props: {listOfMapTypeNames: string[], parentFunction: Function}) => {
     const [mapTypePicks, updateMapTypePicks] = useState<string[]>(props.listOfMapTypeNames)
-
     const updateMapTypePicksHelper = (newArray) => {
         updateMapTypePicks([...newArray])
         }
@@ -31,8 +30,11 @@ const MapTypePicker = (props: {listOfMapTypeNames: string[], parentFunction: Fun
             defaultValue={props.listOfMapTypeNames}
             style={{ width: 500 }}
             renderInput={(params) => (
-                <TextField {...params} label={mapTypePicks.length === 5 ? "All" : "Multiple Values"}/>
+                <TextField {...params} label={mapTypePicks.length === 5 ? "All" : mapTypePicks.length === 0 ? "" : "Multiple Values"}/>
             )}
+            renderTags={(mapTypes) => {
+                return mapTypes.length === 5 ? "All" : "Multiple Values"
+            }}
             />
             </div>
         </div>

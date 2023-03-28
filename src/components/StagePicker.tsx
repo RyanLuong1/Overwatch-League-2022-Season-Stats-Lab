@@ -25,14 +25,17 @@ function StagePicker(props: {listOfStageNames: string[], parentFunction: Functio
             id="checkboxes-tags-demo"
             options={props.listOfStageNames}
             disableCloseOnSelect
-            getOptionLabel={(mapType) => mapType}
+            getOptionLabel={(stageName) => stageName}
             isOptionEqualToValue={(option, value) => option === value}
             onChange={(event, newArray) => handleChange(newArray)}
             defaultValue={props.listOfStageNames}
             style={{ width: 500 }}
             renderInput={(params) => (
-                <TextField {...params} label={stages.length === 5 ? "All" : "Multiple Values"}/>
+                <TextField {...params} label={stages.length === 8 ? "All" : stages.length === 0 ? "" : "Multiple Values"}/>
             )}
+            renderTags={(stageNames) => {
+                return stageNames.length === 8 ? "All" : "Multiple Values"
+            }}
             />
             </div>
         </div>
