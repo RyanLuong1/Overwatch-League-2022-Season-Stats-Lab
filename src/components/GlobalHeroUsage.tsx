@@ -5,6 +5,7 @@ import { Team } from './Team'
 import {Stage} from './Stage'
 import TeamPicker from './TeamPicker.tsx';
 import StagePicker from './StagePicker.tsx';
+import MapPicker from './MapPicker.tsx';
 
 const listOfMapTypes: MapType[] = [
     {typeName: "assult", checkedState: true},
@@ -91,6 +92,7 @@ const GlobalHeroUsage = () => {
             <TeamPicker listOfTeamNames={arrayOfTeamNames} parentFunction={updateArrayOfTeamsHelper}/>
             <MapTypePicker listOfMapTypeNames={arrayOfMapTypesNames} parentFunction={updateArrayOfMapTypesHelper}/>
             <StagePicker listOfStageNames={arrayOfStageNames} parentFunction={updateArrayOfStagesHelper}/>
+            <MapPicker/>
         </div>
     )
 }

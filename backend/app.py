@@ -5,8 +5,11 @@ import io
 import pandas as pd
 import csv
 from io import StringIO
+from flask_cors import CORS
+
 
 app = Flask(__name__)
+CORS(app)
 @app.route('/')
 def hello_world():
     return 'Hello World!'
@@ -27,8 +30,10 @@ def get_map_pools_from_stage(stage):
         for map in all_maps:
             map_pool = {"map_name": map["map_name"], "map_type": map["map_type"]}
             map_pools.append(map_pool)
-            
-        return map_pools, 200
+        json_response = jsonify(map_pools)
+        print(map_pools)
+        # json_response.headers.add("Access-Control-Allow-Origin", "*")
+        return json_response
 
 @app.route('/overwatch-league/2022/<string:stage>/heroes-usage', methods=["GET"])
 def get_hero_usage_from_stage(stage):

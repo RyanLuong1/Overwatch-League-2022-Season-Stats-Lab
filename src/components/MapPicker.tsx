@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-function MapPicker(maps: string[], mapsTypes: string[]) {
-    const [mapNames, setMapNames] = useState(maps);
+function MapPicker() {
+    const [mapNames, setMapNames] = useState();
     
     // const mapItems = (
     //     <select name="maps">
@@ -9,7 +9,13 @@ function MapPicker(maps: string[], mapsTypes: string[]) {
     //             <option key={mapName}>{mapName}</option>)}
     //     </select>
     // )
-    fetch("http://127.0.0.1:5000/bucket").then(response => response.text()).then(text => console.log(text))
+    fetch("/overwatch-league/2022/grand-finals/map-pools", {
+        method: "GET",
+        mode: "cors",
+        cache: "no-cache",
+        credentials: "same-origin",
+    }
+    ).then(response => response.json()).then(json => console.log(json))
     return(
         <div>
             <p>
