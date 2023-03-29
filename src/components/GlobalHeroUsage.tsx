@@ -3,6 +3,7 @@ import MapTypePicker from "./MapTypePicker.tsx"
 import { MapType } from './MapType';
 import { Team } from './Team'
 import {Stage} from './Stage'
+import {Map} from "./Map"
 import TeamPicker from './TeamPicker.tsx';
 import StagePicker from './StagePicker.tsx';
 import MapPicker from './MapPicker.tsx';
@@ -62,11 +63,39 @@ const arrayOfStageNames: string[] = listOfStages.map((stage) =>
     stage.stageName
 )
 
+
+
 const GlobalHeroUsage = () => {
     const [arrayOfMapTypes, updateArrayOfMapTypes] = useState<MapType[]>(listOfMapTypes)
     const [arrayOfTeams, updateArrayOfTeams] = useState<Team[]>(listOfTeams)
     const [arrayofStages, updateArrayOfStages] = useState<Stage[]>(listOfStages)
+    const [arrayOfMaps, updateArrayOfMaps] = useState<Map[]>()
     
+    useEffect(() => {
+        const stages = arrayofStages.map(stage => stage.stageName.replace(":", "").replace(" ", "-").toLowerCase())
+        const fetchMaps = async () => {
+            for (const stage of stages) {
+                const response = await fetch(`/overwatch-league/2022/${stage}/map-pools`, {
+                    method: "GET",
+                    mode: "cors",
+                    cache: "no-cache",
+                    credentials: "same-origin",
+                })
+                const data = response.json()
+                console.log(data)
+            }
+        }
+        fetchMaps()
+    }, []
+    )
+
+    const updateArrayOfMapsHelper = (stageArray: string[]): void => {
+        for (let stage of stageArray) {
+            stage = stage.replace(":", "").toLowerCase()
+
+        }
+    }
+
     const updateArrayOfMapTypesHelper = (newArray: string[]): void => {
         updateArrayOfMapTypes(prevState => prevState.map((mapType) => ({
             ...mapType,
