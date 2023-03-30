@@ -9,13 +9,13 @@ function MapPicker() {
     //             <option key={mapName}>{mapName}</option>)}
     //     </select>
     // )
-    fetch("/overwatch-league/2022/grand-finals/map-pools", {
-        method: "GET",
-        mode: "cors",
-        cache: "no-cache",
-        credentials: "same-origin",
-    }
-    ).then(response => response.json()).then(json => console.log(json))
+    // fetch("/overwatch-league/2022/grand-finals/map-pools", {
+    //     method: "GET",
+    //     mode: "cors",
+    //     cache: "no-cache",
+    //     credentials: "same-origin",
+    // }
+    // ).then(response => response.json()).then(json => console.log(json))
     return(
         <div>
             <p>

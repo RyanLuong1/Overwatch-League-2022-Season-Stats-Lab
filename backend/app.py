@@ -18,6 +18,9 @@ def hello_world():
 def get_map_pools_from_stage(stage):
     if (request.method == "GET"):
         s3 = get_s3()
+        my_bucket = s3.Bucket("overwatch-league-bucket")
+        # for object in my_bucket.objects.all():
+        #     print(object.key)
         map_pools_file_name = f"main/{stage}-map-pools.csv"
         map_pools_file = s3.Object(bucket_name="overwatch-league-bucket", key=map_pools_file_name)
         response = map_pools_file.get()

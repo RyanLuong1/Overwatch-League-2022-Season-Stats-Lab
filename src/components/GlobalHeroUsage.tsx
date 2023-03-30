@@ -7,6 +7,7 @@ import {Map} from "./Map"
 import TeamPicker from './TeamPicker.tsx';
 import StagePicker from './StagePicker.tsx';
 import MapPicker from './MapPicker.tsx';
+import { AllInbox } from '@mui/icons-material';
 
 const listOfMapTypes: MapType[] = [
     {typeName: "assult", checkedState: true},
@@ -69,31 +70,43 @@ const GlobalHeroUsage = () => {
     const [arrayOfMapTypes, updateArrayOfMapTypes] = useState<MapType[]>(listOfMapTypes)
     const [arrayOfTeams, updateArrayOfTeams] = useState<Team[]>(listOfTeams)
     const [arrayofStages, updateArrayOfStages] = useState<Stage[]>(listOfStages)
-    const [arrayOfMaps, updateArrayOfMaps] = useState<Map[]>()
+    const [arrayOfMaps, updateArrayOfMaps] = useState<Map[]>([])
     
     useEffect(() => {
-        const stages = arrayofStages.map(stage => stage.stageName.replace(":", "").replace(" ", "-").toLowerCase())
+        const stages = arrayofStages.map(stage => stage.stageName.replace(":", "-").replace(" ", "-").replace(" ", "").toLowerCase())
         const fetchMaps = async () => {
-            for (const stage of stages) {
+            for await (const stage of stages) {
                 const response = await fetch(`/overwatch-league/2022/${stage}/map-pools`, {
                     method: "GET",
                     mode: "cors",
                     cache: "no-cache",
                     credentials: "same-origin",
+                }).then((response) => {
+                    if (!response.ok) {
+                        throw new Error("Network response was not OK")
+                    }
+                    return response.json()
+                }).catch((error) => {
+                    console.error("There has been a problem with your fetch operation: ", error)
                 })
-                const data = response.json()
-                console.log(data)
+                for (let value of response) {
+                    const found = arrayOfMaps.some(mapObj => mapObj.mapName === value["map_name"])
+                    if (!found) {
+                        let map: Map = {mapName: value["map_name"], type: value["map_type"], checkedState: true}
+                        updateArrayOfMaps([...arrayOfMaps, map])
+                    }
+                }
             }
         }
         fetchMaps()
-    }, []
-    )
+    }, [])
+    // console.log(arrayOfMaps.length)
+    // for (let value of arrayOfMaps) {
+    //     console.log(value)
+    // }
 
-    const updateArrayOfMapsHelper = (stageArray: string[]): void => {
-        for (let stage of stageArray) {
-            stage = stage.replace(":", "").toLowerCase()
-
-        }
+    const updateArrayOfMapsHelper = (mapTypeArray: MapType[]): void => {
+        
     }
 
     const updateArrayOfMapTypesHelper = (newArray: string[]): void => {
