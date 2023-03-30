@@ -31,7 +31,7 @@ def get_map_pools_from_stage(stage):
         # print(map_pool)
         map_pools = []
         for map in all_maps:
-            map_pool = {"map_name": map["map_name"], "map_type": map["map_type"]}
+            map_pool = {"map_name": map["map_name"], "map_type": map["map_type"], "stage": stage}
             map_pools.append(map_pool)
         json_response = jsonify(map_pools)
         print(map_pools)

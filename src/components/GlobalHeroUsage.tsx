@@ -90,11 +90,8 @@ const GlobalHeroUsage = () => {
                     console.error("There has been a problem with your fetch operation: ", error)
                 })
                 for (let value of response) {
-                    const found = arrayOfMaps.some(mapObj => mapObj.mapName === value["map_name"])
-                    if (!found) {
-                        let map: Map = {mapName: value["map_name"], type: value["map_type"], checkedState: true}
-                        updateArrayOfMaps([...arrayOfMaps, map])
-                    }
+                    let map: Map = {mapName: value["map_name"], type: value["map_type"], stage: value["stage"], checkedState: true}
+                    updateArrayOfMaps([...arrayOfMaps, map])
                 }
             }
         }
@@ -105,8 +102,16 @@ const GlobalHeroUsage = () => {
     //     console.log(value)
     // }
 
-    const updateArrayOfMapsHelper = (mapTypeArray: MapType[]): void => {
-        
+    const updateArrayOfMapsHelper = (mapTypeArray: string[] = [], stageArray: string[] = []): void => {
+        updateArrayOfMaps(prevState => prevState.map((map) => ({
+            ...map,
+            checkedState: mapTypeArray.includes(map.type) ? true : false
+        })))
+
+        updateArrayOfMaps(prevState => prevState.map((map) => ({
+            ...map,
+            checkedState: stageArray.includes(map.stage) ? true : false
+        })))
     }
 
     const updateArrayOfMapTypesHelper = (newArray: string[]): void => {
