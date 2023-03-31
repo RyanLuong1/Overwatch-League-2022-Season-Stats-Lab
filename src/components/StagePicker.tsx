@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TextField, Autocomplete, Checkbox } from '@mui/material';
 
 function StagePicker(props: {listOfStageNames: string[], parentFunction: Function}) {
-    const [stages, updateStageNames] = useState(props.listOfStageNames);
+    const [stagesName, updateStageNames] = useState<string[]>(props.listOfStageNames);
     
     const updateStageNamesHelper = (newArray) => {
         updateStageNames([...newArray])
@@ -31,7 +31,7 @@ function StagePicker(props: {listOfStageNames: string[], parentFunction: Functio
             defaultValue={props.listOfStageNames}
             style={{ width: 500 }}
             renderInput={(params) => (
-                <TextField {...params} label={stages.length === 8 ? "All" : stages.length === 0 ? "" : "Multiple Values"}/>
+                <TextField {...params} label={stagesName.length === 8 ? "All" : stagesName.length === 0 ? "" : "Multiple Values"}/>
             )}
             renderTags={(stageNames) => {
                 return stageNames.length === 8 ? "All" : "Multiple Values"

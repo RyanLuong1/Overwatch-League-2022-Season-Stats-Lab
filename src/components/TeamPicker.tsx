@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import {TextField, Autocomplete} from '@mui/material'
 
 function TeamPicker(props: {listOfTeamNames: string[], parentFunction: Function}) {
-    const [teams, updateTeams] = useState<string[]>(props.listOfTeamNames)
+    const [teamsNames, updateTeamsNames] = useState<string[]>(props.listOfTeamNames)
 
-    const updateTeamsHelper = (newArray) => {
-        updateTeams([...newArray])
+    const updateTeamsNamesHelper = (newArray) => {
+        updateTeamsNames([...newArray])
     }
 
     const handleChange = (newArray) => {
-        updateTeamsHelper(newArray)
+        updateTeamsNamesHelper(newArray)
         props.parentFunction(newArray)
     }
     
@@ -31,7 +31,7 @@ function TeamPicker(props: {listOfTeamNames: string[], parentFunction: Function}
             defaultValue={props.listOfTeamNames}
             style={{ width: 500 }}
             renderInput={(params) => (
-                <TextField {...params} label={teams.length === 20 ? "All" : teams.length === 0 ? "" : "Multiple Values"}/>
+                <TextField {...params} label={teamsNames.length === 20 ? "All" : teamsNames.length === 0 ? "" : "Multiple Values"}/>
             )}
             renderTags={(teamNames) => {
                 return teamNames.length === 20 ? "All" : "Multiple Values"

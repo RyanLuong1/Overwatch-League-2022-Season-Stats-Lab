@@ -1,28 +1,43 @@
 import React, { useState, useEffect } from 'react';
+import { Autocomplete, TextField } from '@mui/material';
 
-function MapPicker() {
-    const [mapNames, setMapNames] = useState();
+function MapPicker(props: {listOfMaps: string[], parentFunction: Function}) {
+    const [mapNames, updateMapsNames] = useState<string[]>(props.listOfMaps);
     
-    // const mapItems = (
-    //     <select name="maps">
-    //         {mapNames.map(mapName =>
-    //             <option key={mapName}>{mapName}</option>)}
-    //     </select>
-    // )
-    // fetch("/overwatch-league/2022/grand-finals/map-pools", {
-    //     method: "GET",
-    //     mode: "cors",
-    //     cache: "no-cache",
-    //     credentials: "same-origin",
-    // }
-    // ).then(response => response.json()).then(json => console.log(json))
+    const updateMapsNamesHelper = (newArray) => {
+        updateMapsNames([...newArray])
+    }
+
+    const handleChange = (newArray) => {
+        updateMapsNamesHelper(newArray)
+        props.parentFunction(newArray)
+    }
+
     return(
         <div>
             <p>
                 Map
             </p>
-            {/* {mapItems} */}
-            Hi
+            <div>
+            <Autocomplete
+            multiple
+            limitTags={2}
+            id="checkboxes-tags-demo"
+            options={props.listOfMaps}
+            disableCloseOnSelect
+            getOptionLabel={(mapName) => mapName}
+            isOptionEqualToValue={(option, value) => option === value}
+            onChange={(event, newArray) => handleChange(newArray)}
+            value={props.listOfMaps}
+            style={{ width: 500 }}
+            renderInput={(params) => (
+                <TextField {...params} label={mapNames.length === props.listOfMaps.length ? "All" : mapNames.length === 0 ? "" : "Multiple Values"}/>
+            )}
+            renderTags={(mapNames) => {
+                return mapNames.length === props.listOfMaps.length ? "All" : "Multiple Values"
+            }}
+            />
+            </div>
         </div>
     )
 }

@@ -16,7 +16,7 @@ const MapTypePicker = (props: {listOfMapTypeNames: string[], parentFunction: Fun
     return(
         <div>
             <p>
-                Map
+                Map Types
             </p>
             <div>
             <Autocomplete
