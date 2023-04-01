@@ -94,18 +94,14 @@ const GlobalHeroUsage = () => {
                     let map: Map = {mapName: value["map_name"], type: value["map_type"], stage: value["stage"], checkedState: true}
                     newMaps.push(map)
                 }
-                let filterMaps: Map[] = []
-                for (const mapType of mapTypes) {
-                    let filterMap: Map[] = newMaps.filter((object) => {
-                        return object.type === mapType.typeName
-                    })
-                    filterMaps = [...filterMaps, ...filterMap]
-                }
-                updateMaps([...filterMaps])
+                updateMaps([...newMaps])
             }
         }
         fetchMaps()
-    }, [mapTypes, stages])
+        // for (const object of maps) {
+        //     console.log(object)
+        // }
+    }, [])
 
     const updateTeamsProperties = (teamsList: string[]): void => {
         updateTeams(prevState => prevState.map((team) => ({
@@ -134,17 +130,12 @@ const GlobalHeroUsage = () => {
             checkedState: mapsList.includes(map.mapName) ? true : false
         })))
     }
-
-    let arrayOfMapNames: string[] = maps.map((map) => {
-        return map.mapName
-    })
-    console.log(arrayOfMapNames)
     return(
         <div>
             <TeamPicker listOfTeamNames={arrayOfTeamNames} parentFunction={updateTeamsProperties}/>
             <MapTypePicker listOfMapTypeNames={arrayOfMapTypesNames} parentFunction={updateMapTypesProperties}/>
             <StagePicker listOfStageNames={arrayOfStageNames} parentFunction={updateStagesProperties}/>
-            <MapPicker listOfMaps={arrayOfMapNames} parentFunction={updateMapsProperties}/>
+            <MapPicker listOfMaps={maps} listOfMapTypes={mapTypes} listOfStages={stages} parentFunction={updateMapsProperties}/>
         </div>
     )
 }
