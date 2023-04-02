@@ -11,36 +11,32 @@ import { AllInbox } from '@mui/icons-material';
 
 console.log("First")
 
-const getAllMaps = (listOfStages: Stage[]) => {
-        let allMaps: Map[] = []
-        const allStages = listOfStages.map(stage => stage.stageName.replace(":", "-").replace(" ", "-").replace(" ", "").toLowerCase())
-        let fetchMaps = async () => {
-            for await (const stage of allStages) {
-                const response = await fetch(`/overwatch-league/2022/${stage}/map-pools`, {
-                    method: "GET",
-                    mode: "cors",
-                    cache: "no-cache",
-                    credentials: "same-origin",
-                }).then((response) => {
-                    if (!response.ok) {
-                        throw new Error(`Network response was not OK ${stage}`)
-                    }
-                    return response.json()
-                }).catch((error) => {
-                    console.error("There has been a problem with your fetch operation: ", error)
-                })
-                for (const value of response) {
-                    let map: Map = {mapName: value["map_name"], type: value["map_type"], stage: value["stage"], checkedState: true}
-                    allMaps.push(map)
-                }
-            }
-        }
-        fetchMaps()
-        return allMaps
-        // for (const object of maps) {
-        //     console.log(object)
-        // }
-}
+
+
+
+// const getAllMaps = (listOfStages: Stage[]) => {
+//     let allMaps: Map[] = []
+//     const allStages = listOfStages.map(stage => stage.stageName.replace(":", "-").replace(" ", "-").replace(" ", "").toLowerCase())
+//     for (const stage of allStages) {
+//             const response = fetch(`/overwatch-league/2022/${stage}/map-pools`, {
+//                 method: "GET",
+//                 mode: "cors",
+//                 cache: "no-cache",
+//                 credentials: "same-origin",
+//             }).then((response) => {
+//                 if (!response.ok) {
+//                     throw new Error(`Network response was not OK ${stage}`)
+//                 }
+//                 return response.json()
+//             }).then((data) => {
+//                 for (const value of data) {
+//                     let map: Map = {mapName: value["map_name"], type: value["map_type"], stage: value["stage"], checkedState: true}
+//                     allMaps.push(map)
+//                 }
+//             })
+//     }
+//     return allMaps
+// }
 
 
 const listOfMapTypes: MapType[] = [
@@ -62,7 +58,8 @@ const listOfStages: Stage[] = [
     {stageName: "Grand Finals", checkedState: true}
 ]
 
-const listOfMaps: Map[] = getAllMaps(listOfStages)
+// const listOfMaps: Map[] = getAllMaps(listOfStages)
+// console.log(listOfMaps)
 
 const listOfTeams: Team[] = [
     {teamName: "Atlanta Reign", checkedState: true},
@@ -86,8 +83,6 @@ const listOfTeams: Team[] = [
     {teamName: "Vegas Eternal", checkedState: true},
     {teamName: "Washington Justice", checkedState: true},
 ]
-
-
 
 const arrayOfMapTypesNames: string[] = listOfMapTypes.map((mapType) =>
     mapType.typeName
@@ -135,42 +130,59 @@ const GlobalHeroUsage = () => {
     const [mapTypes, updateMapTypes] = useState<MapType[]>(listOfMapTypes)
     const [teams, updateTeams] = useState<Team[]>(listOfTeams)
     const [stages, updateStages] = useState<Stage[]>(listOfStages)
-    const [maps, updateMaps] = useState<Map[]>(listOfMaps)
+    const [maps, updateMaps] = useState<Map[]>([])
     const [mapOptions, setMapOptions] = useState<string[]>([])
-    console.log("Render")
-    console.log(maps)
+    const [hasLoading, setLoading] = useState(false)
     
-    // useEffect(() => {
-    //     let newMaps: Map[] = []
-    //     const allStages = stages.map(stage => stage.stageName.replace(":", "-").replace(" ", "-").replace(" ", "").toLowerCase())
-    //     let fetchMaps = async () => {
-    //         for await (const stage of allStages) {
-    //             const response = await fetch(`/overwatch-league/2022/${stage}/map-pools`, {
-    //                 method: "GET",
-    //                 mode: "cors",
-    //                 cache: "no-cache",
-    //                 credentials: "same-origin",
-    //             }).then((response) => {
-    //                 if (!response.ok) {
-    //                     throw new Error(`Network response was not OK ${stage}`)
-    //                 }
-    //                 return response.json()
-    //             }).catch((error) => {
-    //                 console.error("There has been a problem with your fetch operation: ", error)
-    //             })
-    //             // console.log(response)
-    //             for (const value of response) {
-    //                 let map: Map = {mapName: value["map_name"], type: value["map_type"], stage: value["stage"], checkedState: true}
-    //                 newMaps.push(map)
-    //             }
-    //         }
-    //     }
-    //     fetchMaps()
-    //     updateMaps(newMaps)
-    //     // for (const object of maps) {
-    //     //     console.log(object)
-    //     // }
-    // }, [])
+    useEffect(() => {
+        // let allMaps: Map[] = []
+        // const allStages = stages.map(stage => stage.stageName.replace(":", "-").replace(" ", "-").replace(" ", "").toLowerCase())
+        // for (const stage of allStages) {
+        //         const response = fetch(`/overwatch-league/2022/${stage}/map-pools`, {
+        //             method: "GET",
+        //             mode: "cors",
+        //             cache: "no-cache",
+        //             credentials: "same-origin",
+        //         }).then((response) => {
+        //             if (!response.ok) {
+        //                 throw new Error(`Network response was not OK ${stage}`)
+        //             }
+        //             return response.json()
+        //         }).then((data) => {
+        //             for (const value of data) {
+        //                 let map: Map = {mapName: value["map_name"], type: value["map_type"], stage: value["stage"], checkedState: true}
+        //                 allMaps.push(map)
+        //             }
+        //         })
+        // }
+        let allMaps: Map[] = []
+        const allStages = stages.map(stage => stage.stageName.replace(":", "-").replace(" ", "-").replace(" ", "").toLowerCase())
+        let fetchMaps = async () => {
+            for await (const stage of allStages) {
+                const response = await fetch(`/overwatch-league/2022/${stage}/map-pools`, {
+                    method: "GET",
+                    mode: "cors",
+                    cache: "no-cache",
+                    credentials: "same-origin",
+                })
+                const data = await response.json()
+                console.log(`stage ${data}`)
+                for (const value of data) {
+                    let map: Map = {mapName: value["map_name"], type: value["map_type"], stage: value["stage"], checkedState: true}
+                    allMaps.push(map)
+                }
+            }
+        }
+        // fetchMaps()
+        // updateMaps(allMaps)
+        // for (const object of maps) {
+        //     console.log(object)
+        // if (maps) {
+        //     setLoading(true)
+        //     console.log(maps)
+        // }
+        // }
+    }, [])
     const updateTeamsProperties = (teamsList: string[]): void => {
         updateTeams(prevState => prevState.map((team) => ({
             ...team,
@@ -192,13 +204,12 @@ const GlobalHeroUsage = () => {
         })))
     }
 
-    const updateMapsProperties = (mapsList: string[]): void => {
-        updateMaps(prevState => prevState.map((map) => ({
-            ...map,
-            checkedState: mapsList.includes(map.mapName) ? true : false
-        })))
-    }
-    
+    // const updateMapsProperties = (mapsList: string[]): void => {
+    //     updateMaps(prevState => prevState.map((map) => ({
+    //         ...map,
+    //         checkedState: mapsList.includes(map.mapName) ? true : false
+    //     })))
+    // }
     return(
         <div>
             <TeamPicker listOfTeamNames={arrayOfTeamNames} parentFunction={updateTeamsProperties}/>
