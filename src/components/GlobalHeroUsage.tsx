@@ -64,6 +64,34 @@ const arrayOfStageNames: string[] = listOfStages.map((stage) =>
     stage.stageName
 )
 
+const createMapOptions = (listOfMaps: Map[], listOfStages: Stage[], listOfMapTypes: MapType[]): string[] => {
+    const filterStages = listOfStages.filter((stage) => {
+        return stage.checkedState !== false
+    })
+    const filterMapTypes = listOfMapTypes.filter((mapType) => {
+        return mapType.checkedState !== false
+    })
+    // console.log(filterStages)
+    // console.log(filterMapTypes)
+    // console.log(listOfMaps)
+    let mapsObjects: Map[] = []
+    for (const stage of filterStages) {
+        let filterMaps: Map[] = listOfMaps.filter((map) => {
+            return map.stage === stage.stageName
+        })
+        mapsObjects.push(...filterMaps)
+    }
+    // console.log(mapsObjects)
+    let result: Map[] = []
+    for (const mapType of filterMapTypes) {
+        let filterMaps: Map[] = mapsObjects.filter((map) => {
+            return map.type === mapType.typeName
+        })
+        result.push(...filterMaps)
+    }
+    const allMaps: string[] = result.map((map) => {return map.mapName})
+    return allMaps
+}
 
 
 const GlobalHeroUsage = () => {
@@ -73,6 +101,7 @@ const GlobalHeroUsage = () => {
     const [maps, updateMaps] = useState<Map[]>([])
     
     useEffect(() => {
+        let newMaps: Map[] = []
         const allStages = stages.map(stage => stage.stageName.replace(":", "-").replace(" ", "-").replace(" ", "").toLowerCase())
         const fetchMaps = async () => {
             for await (const stage of allStages) {
@@ -89,20 +118,20 @@ const GlobalHeroUsage = () => {
                 }).catch((error) => {
                     console.error("There has been a problem with your fetch operation: ", error)
                 })
-                let newMaps: Map[] = []
+                // console.log(response)
                 for (const value of response) {
                     let map: Map = {mapName: value["map_name"], type: value["map_type"], stage: value["stage"], checkedState: true}
                     newMaps.push(map)
                 }
-                updateMaps([...newMaps])
             }
         }
         fetchMaps()
+        updateMaps(newMaps)
         // for (const object of maps) {
         //     console.log(object)
         // }
     }, [])
-
+    console.log(maps)
     const updateTeamsProperties = (teamsList: string[]): void => {
         updateTeams(prevState => prevState.map((team) => ({
             ...team,
@@ -130,12 +159,15 @@ const GlobalHeroUsage = () => {
             checkedState: mapsList.includes(map.mapName) ? true : false
         })))
     }
+
+    const mapOptions: string[] = createMapOptions(maps, stages, mapTypes)
+    
     return(
         <div>
             <TeamPicker listOfTeamNames={arrayOfTeamNames} parentFunction={updateTeamsProperties}/>
             <MapTypePicker listOfMapTypeNames={arrayOfMapTypesNames} parentFunction={updateMapTypesProperties}/>
             <StagePicker listOfStageNames={arrayOfStageNames} parentFunction={updateStagesProperties}/>
-            <MapPicker listOfMaps={maps} listOfMapTypes={mapTypes} listOfStages={stages} parentFunction={updateMapsProperties}/>
+            <MapPicker listOfMaps={maps} mapOptions={mapOptions} parentFunction={updateMapsProperties}/>
         </div>
     )
 }
