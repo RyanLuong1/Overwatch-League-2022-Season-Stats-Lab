@@ -84,6 +84,8 @@ const listOfTeams: Team[] = [
     {teamName: "Washington Justice", checkedState: true},
 ]
 
+
+
 const arrayOfMapTypesNames: string[] = listOfMapTypes.map((mapType) =>
     mapType.typeName
 )
@@ -130,8 +132,8 @@ const GlobalHeroUsage = () => {
     const [mapTypes, updateMapTypes] = useState<MapType[]>(listOfMapTypes)
     const [teams, updateTeams] = useState<Team[]>(listOfTeams)
     const [stages, updateStages] = useState<Stage[]>(listOfStages)
-    const [maps, updateMaps] = useState<Map[]>([])
-    const [mapOptions, setMapOptions] = useState<string[]>([])
+    const [maps, updateMaps] = useState<Map[]>()
+    const [mapOptions, setMapOptions] = useState<string[]>()
     const [hasLoading, setLoading] = useState(false)
     
     useEffect(() => {
@@ -164,23 +166,28 @@ const GlobalHeroUsage = () => {
                     mode: "cors",
                     cache: "no-cache",
                     credentials: "same-origin",
+                }).then((response) => {
+                    if (!response.ok) {
+                        throw new Error(`Network response was not OK ${stage}`)
+                    }
+                    return response.json()
+                }).catch((error) => {
+                    console.error("There has been a problem with your fetch operation: ", error)
                 })
-                const data = await response.json()
-                console.log(`stage ${data}`)
-                for (const value of data) {
+                for (const value of response) {
                     let map: Map = {mapName: value["map_name"], type: value["map_type"], stage: value["stage"], checkedState: true}
                     allMaps.push(map)
                 }
             }
         }
-        // fetchMaps()
-        // updateMaps(allMaps)
+        fetchMaps()
+        updateMaps(allMaps)
         // for (const object of maps) {
         //     console.log(object)
-        // if (maps) {
-        //     setLoading(true)
-        //     console.log(maps)
-        // }
+        if (maps) {
+            setLoading(true)
+            console.log(maps)
+        }
         // }
     }, [])
     const updateTeamsProperties = (teamsList: string[]): void => {
@@ -211,12 +218,15 @@ const GlobalHeroUsage = () => {
     //     })))
     // }
     return(
-        <div>
+        <>
+        { hasLoading && <div>
             <TeamPicker listOfTeamNames={arrayOfTeamNames} parentFunction={updateTeamsProperties}/>
             <MapTypePicker listOfMapTypeNames={arrayOfMapTypesNames} parentFunction={updateMapTypesProperties}/>
             <StagePicker listOfStageNames={arrayOfStageNames} parentFunction={updateStagesProperties}/>
             {/* <MapPicker listOfMaps={maps} mapOptions={mapOptions} parentFunction={updateMapsProperties}/> */}
         </div>
+        }
+        </>
     )
 }
 
