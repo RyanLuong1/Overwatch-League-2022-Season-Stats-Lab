@@ -9,6 +9,40 @@ import StagePicker from './StagePicker.tsx';
 import MapPicker from './MapPicker.tsx';
 import { AllInbox } from '@mui/icons-material';
 
+console.log("First")
+
+const getAllMaps = (listOfStages: Stage[]) => {
+        let allMaps: Map[] = []
+        const allStages = listOfStages.map(stage => stage.stageName.replace(":", "-").replace(" ", "-").replace(" ", "").toLowerCase())
+        let fetchMaps = async () => {
+            for await (const stage of allStages) {
+                const response = await fetch(`/overwatch-league/2022/${stage}/map-pools`, {
+                    method: "GET",
+                    mode: "cors",
+                    cache: "no-cache",
+                    credentials: "same-origin",
+                }).then((response) => {
+                    if (!response.ok) {
+                        throw new Error(`Network response was not OK ${stage}`)
+                    }
+                    return response.json()
+                }).catch((error) => {
+                    console.error("There has been a problem with your fetch operation: ", error)
+                })
+                for (const value of response) {
+                    let map: Map = {mapName: value["map_name"], type: value["map_type"], stage: value["stage"], checkedState: true}
+                    allMaps.push(map)
+                }
+            }
+        }
+        fetchMaps()
+        return allMaps
+        // for (const object of maps) {
+        //     console.log(object)
+        // }
+}
+
+
 const listOfMapTypes: MapType[] = [
     {typeName: "assult", checkedState: true},
     {typeName: "control", checkedState: true},
@@ -27,6 +61,8 @@ const listOfStages: Stage[] = [
     {stageName: "Countdown Cup: Qualifiers", checkedState: true},
     {stageName: "Grand Finals", checkedState: true}
 ]
+
+const listOfMaps: Map[] = getAllMaps(listOfStages)
 
 const listOfTeams: Team[] = [
     {teamName: "Atlanta Reign", checkedState: true},
@@ -51,10 +87,11 @@ const listOfTeams: Team[] = [
     {teamName: "Washington Justice", checkedState: true},
 ]
 
+
+
 const arrayOfMapTypesNames: string[] = listOfMapTypes.map((mapType) =>
     mapType.typeName
 )
-
 
 const arrayOfTeamNames: string[] = listOfTeams.map((team) =>
     team.teamName
@@ -64,74 +101,76 @@ const arrayOfStageNames: string[] = listOfStages.map((stage) =>
     stage.stageName
 )
 
-const createMapOptions = (listOfMaps: Map[], listOfStages: Stage[], listOfMapTypes: MapType[]): string[] => {
-    const filterStages = listOfStages.filter((stage) => {
-        return stage.checkedState !== false
-    })
-    const filterMapTypes = listOfMapTypes.filter((mapType) => {
-        return mapType.checkedState !== false
-    })
-    // console.log(filterStages)
-    // console.log(filterMapTypes)
-    // console.log(listOfMaps)
-    let mapsObjects: Map[] = []
-    for (const stage of filterStages) {
-        let filterMaps: Map[] = listOfMaps.filter((map) => {
-            return map.stage === stage.stageName
-        })
-        mapsObjects.push(...filterMaps)
-    }
-    // console.log(mapsObjects)
-    let result: Map[] = []
-    for (const mapType of filterMapTypes) {
-        let filterMaps: Map[] = mapsObjects.filter((map) => {
-            return map.type === mapType.typeName
-        })
-        result.push(...filterMaps)
-    }
-    const allMaps: string[] = result.map((map) => {return map.mapName})
-    return allMaps
-}
+
+// const createMapOptions = (listOfMaps: Map[], listOfStages: Stage[], listOfMapTypes: MapType[]): string[] => {
+//     const filterStages = listOfStages.filter((stage) => {
+//         return stage.checkedState !== false
+//     })
+//     const filterMapTypes = listOfMapTypes.filter((mapType) => {
+//         return mapType.checkedState !== false
+//     })
+//     // console.log(filterStages)
+//     // console.log(filterMapTypes)
+//     // console.log(listOfMaps)
+//     let mapsObjects: Map[] = []
+//     for (const stage of filterStages) {
+//         let filterMaps: Map[] = listOfMaps.filter((map) => {
+//             return map.mapName === stage.stageName.replace(":", "-").replace(" ", "-").replace(" ", "").toLowerCase()
+//         }).map((map) => {return map})
+//         mapsObjects.push(...filterMaps)
+//     }
+//     let result: Map[] = []
+//     for (const mapType of filterMapTypes) {
+//         let filterMaps: Map[] = mapsObjects.filter((map) => {
+//             return map.type === mapType.typeName
+//         })
+//         result.push(...filterMaps)
+//     }
+//     const allMaps: string[] = result.map((map) => {return map.mapName})
+//     return allMaps
+// }
 
 
 const GlobalHeroUsage = () => {
     const [mapTypes, updateMapTypes] = useState<MapType[]>(listOfMapTypes)
     const [teams, updateTeams] = useState<Team[]>(listOfTeams)
     const [stages, updateStages] = useState<Stage[]>(listOfStages)
-    const [maps, updateMaps] = useState<Map[]>([])
-    
-    useEffect(() => {
-        let newMaps: Map[] = []
-        const allStages = stages.map(stage => stage.stageName.replace(":", "-").replace(" ", "-").replace(" ", "").toLowerCase())
-        const fetchMaps = async () => {
-            for await (const stage of allStages) {
-                const response = await fetch(`/overwatch-league/2022/${stage}/map-pools`, {
-                    method: "GET",
-                    mode: "cors",
-                    cache: "no-cache",
-                    credentials: "same-origin",
-                }).then((response) => {
-                    if (!response.ok) {
-                        throw new Error(`Network response was not OK ${stage}`)
-                    }
-                    return response.json()
-                }).catch((error) => {
-                    console.error("There has been a problem with your fetch operation: ", error)
-                })
-                // console.log(response)
-                for (const value of response) {
-                    let map: Map = {mapName: value["map_name"], type: value["map_type"], stage: value["stage"], checkedState: true}
-                    newMaps.push(map)
-                }
-            }
-        }
-        fetchMaps()
-        updateMaps(newMaps)
-        // for (const object of maps) {
-        //     console.log(object)
-        // }
-    }, [])
+    const [maps, updateMaps] = useState<Map[]>(listOfMaps)
+    const [mapOptions, setMapOptions] = useState<string[]>([])
+    console.log("Render")
     console.log(maps)
+    
+    // useEffect(() => {
+    //     let newMaps: Map[] = []
+    //     const allStages = stages.map(stage => stage.stageName.replace(":", "-").replace(" ", "-").replace(" ", "").toLowerCase())
+    //     let fetchMaps = async () => {
+    //         for await (const stage of allStages) {
+    //             const response = await fetch(`/overwatch-league/2022/${stage}/map-pools`, {
+    //                 method: "GET",
+    //                 mode: "cors",
+    //                 cache: "no-cache",
+    //                 credentials: "same-origin",
+    //             }).then((response) => {
+    //                 if (!response.ok) {
+    //                     throw new Error(`Network response was not OK ${stage}`)
+    //                 }
+    //                 return response.json()
+    //             }).catch((error) => {
+    //                 console.error("There has been a problem with your fetch operation: ", error)
+    //             })
+    //             // console.log(response)
+    //             for (const value of response) {
+    //                 let map: Map = {mapName: value["map_name"], type: value["map_type"], stage: value["stage"], checkedState: true}
+    //                 newMaps.push(map)
+    //             }
+    //         }
+    //     }
+    //     fetchMaps()
+    //     updateMaps(newMaps)
+    //     // for (const object of maps) {
+    //     //     console.log(object)
+    //     // }
+    // }, [])
     const updateTeamsProperties = (teamsList: string[]): void => {
         updateTeams(prevState => prevState.map((team) => ({
             ...team,
@@ -159,17 +198,16 @@ const GlobalHeroUsage = () => {
             checkedState: mapsList.includes(map.mapName) ? true : false
         })))
     }
-
-    const mapOptions: string[] = createMapOptions(maps, stages, mapTypes)
     
     return(
         <div>
             <TeamPicker listOfTeamNames={arrayOfTeamNames} parentFunction={updateTeamsProperties}/>
             <MapTypePicker listOfMapTypeNames={arrayOfMapTypesNames} parentFunction={updateMapTypesProperties}/>
             <StagePicker listOfStageNames={arrayOfStageNames} parentFunction={updateStagesProperties}/>
-            <MapPicker listOfMaps={maps} mapOptions={mapOptions} parentFunction={updateMapsProperties}/>
+            {/* <MapPicker listOfMaps={maps} mapOptions={mapOptions} parentFunction={updateMapsProperties}/> */}
         </div>
     )
 }
+
 
 export default GlobalHeroUsage
