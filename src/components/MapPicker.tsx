@@ -5,17 +5,17 @@ import {Stage} from "./Stage"
 import { MapType } from './MapType';
 
 
-function MapPicker(props: {listOfMaps: Map[], mapOptions: string[], parentFunction: Function}) {
-    let maps: string[] = props.listOfMaps.map((map) => {return map.mapName})
+function MapPicker(props: {listOfMaps: Map[], parentFunction: Function}) {
+    // let maps: string[] = props.listOfMaps.map((map) => {return map.mapName})
 
-    const [mapNames, updateMapsNames] = useState<string[]>(maps);
+    const [mapNames, updateMapsNames] = useState<string[]>([]);
     
     const updateMapsNamesHelper = (newArray) => {
         updateMapsNames([...newArray])
     }
 
     const handleChange = (newArray) => {
-        updateMapsNamesHelper(newArray)
+        // updateMapsNamesHelper(newArray)
         props.parentFunction(newArray)
     }
 
@@ -29,12 +29,12 @@ function MapPicker(props: {listOfMaps: Map[], mapOptions: string[], parentFuncti
             multiple
             limitTags={2}
             id="checkboxes-tags-demo"
-            options={maps}
+            options={props.listOfMaps}
             disableCloseOnSelect
-            getOptionLabel={(mapName) => mapName}
+            getOptionLabel={(mapName) => mapName.mapName}
             isOptionEqualToValue={(option, value) => option === value}
             onChange={(event, newArray) => handleChange(newArray)}
-            value={props.mapOptions}
+            value={props.listOfMaps}
             style={{ width: 500 }}
             renderInput={(params) => (
                 <TextField {...params} label={mapNames.length === props.listOfMaps.length ? "All" : mapNames.length === 0 ? "" : "Multiple Values"}/>

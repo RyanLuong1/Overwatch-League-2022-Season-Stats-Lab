@@ -137,6 +137,7 @@ const GlobalHeroUsage = () => {
     console.log(teams)
     console.log(stages)
     console.log(mapTypes)
+    console.log(maps)
     useEffect(() => {
         // let allMaps: Map[] = []
         // const allStages = stages.map(stage => stage.stageName.replace(":", "-").replace(" ", "-").replace(" ", "").toLowerCase())
@@ -158,8 +159,8 @@ const GlobalHeroUsage = () => {
         //             }
         //         })
         // }
-        let allMaps: Map[] = []
         const allStages = stages.map(stage => stage.stageName.replace(":", "-").replace(" ", "-").replace(" ", "").toLowerCase())
+        let allMaps: Map[] = []
         let fetchMaps = async () => {
             for await (const stage of allStages) {
                 const response = await fetch(`/overwatch-league/2022/${stage}/map-pools`, {
@@ -183,7 +184,7 @@ const GlobalHeroUsage = () => {
         }
         fetchMaps()
         updateMaps(allMaps)
-        console.log(maps)
+        // console.log(maps)
     }, [])
     const updateTeamsProperties = (teamsList: string[]): void => {
         // console.log(teamsList)
@@ -219,18 +220,29 @@ const GlobalHeroUsage = () => {
         console.log(stages)
     }
 
-    // const updateMapsProperties = (mapsList: string[]): void => {
-    //     updateMaps(prevState => prevState.map((map) => ({
-    //         ...map,
-    //         checkedState: mapsList.includes(map.mapName) ? true : false
-    //     })))
-    // }
+    const updateMapsProperties = (mapsList: string[]): void => {
+        const stagesList: string[] = stages.filter((stage) => {
+            if (stage.checkedState === true) {
+                return stage.stageName
+            }
+        }).map((stage) => {return stage.stageName})
+        const mapTypesList: string[] = mapTypes.filter((mapType) => {
+            if (mapType.checkedState === true) {
+                return mapType.typeName
+            }
+        }).map((mapType) => {return mapType.typeName})
+        // updateMaps(prevState => prevState.map((map) => {
+        //     if (!mapsList.includes(map.mapName) || ) {
+                
+        //     }
+        // }
+    }
     return(
         <div>
             <TeamPicker listOfTeamNames={arrayOfTeamNames} parentFunction={updateTeamsProperties}/>
             <MapTypePicker listOfMapTypeNames={arrayOfMapTypesNames} parentFunction={updateMapTypesProperties}/>
             <StagePicker listOfStageNames={arrayOfStageNames} parentFunction={updateStagesProperties}/>
-            {/* <MapPicker listOfMaps={maps} mapOptions={mapOptions} parentFunction={updateMapsProperties}/> */}
+            <MapPicker listOfMaps={maps} parentFunction={updateMapsProperties}/>
         </div>
     )
 }
