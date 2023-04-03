@@ -132,10 +132,11 @@ const GlobalHeroUsage = () => {
     const [mapTypes, updateMapTypes] = useState<MapType[]>(listOfMapTypes)
     const [teams, updateTeams] = useState<Team[]>(listOfTeams)
     const [stages, updateStages] = useState<Stage[]>(listOfStages)
-    const [maps, updateMaps] = useState<Map[]>()
-    const [mapOptions, setMapOptions] = useState<string[]>()
-    const [hasLoading, setLoading] = useState(false)
-    
+    const [maps, updateMaps] = useState<Map[]>([])
+    const [mapOptions, setMapOptions] = useState<string[]>([])
+    console.log(teams)
+    console.log(stages)
+    console.log(mapTypes)
     useEffect(() => {
         // let allMaps: Map[] = []
         // const allStages = stages.map(stage => stage.stageName.replace(":", "-").replace(" ", "-").replace(" ", "").toLowerCase())
@@ -182,33 +183,40 @@ const GlobalHeroUsage = () => {
         }
         fetchMaps()
         updateMaps(allMaps)
-        // for (const object of maps) {
-        //     console.log(object)
-        if (maps) {
-            setLoading(true)
-            console.log(maps)
-        }
-        // }
+        console.log(maps)
     }, [])
     const updateTeamsProperties = (teamsList: string[]): void => {
-        updateTeams(prevState => prevState.map((team) => ({
-            ...team,
-            checkedState: teamsList.includes(team.teamName) ? true : false
-        })))
+        // console.log(teamsList)
+        // for (let team of teams) {
+        //     console
+        // }
+        updateTeams(prevState => prevState.map((team) => {
+            if (!teamsList.includes(team.teamName)) {
+                return {...team, checkedState: false}
+            }
+            return {...team, checkedState: true}
+        }))
+        console.log(teams)
     }
 
     const updateMapTypesProperties = (mapTypesList: string[]): void => {
-        updateMapTypes(prevState => prevState.map((mapType) => ({
-            ...mapType,
-            checkedState: mapTypesList.includes(mapType.typeName) ? true : false
-        })))
+        updateMapTypes(prevState => prevState.map((mapType) => {
+            if (!mapTypesList.includes(mapType.typeName)) {
+                return {...mapType, checkedState: false}
+            }
+            return {...mapType, checkedState: true}
+        }))
+        console.log(mapTypes)
     }
 
     const updateStagesProperties = (stagesList: string[]): void => {
-        updateStages(prevState => prevState.map((stage) => ({
-            ...stage,
-            checkedState: stagesList.includes(stage.stageName) ? true : false
-        })))
+        updateStages(prevState => prevState.map((stage) => {
+            if (!stagesList.includes(stage.stageName)) {
+                return {...stage, checkedState: false}
+            }
+            return {...stage, checkedState: true}
+        }))
+        console.log(stages)
     }
 
     // const updateMapsProperties = (mapsList: string[]): void => {
@@ -218,15 +226,12 @@ const GlobalHeroUsage = () => {
     //     })))
     // }
     return(
-        <>
-        { hasLoading && <div>
+        <div>
             <TeamPicker listOfTeamNames={arrayOfTeamNames} parentFunction={updateTeamsProperties}/>
             <MapTypePicker listOfMapTypeNames={arrayOfMapTypesNames} parentFunction={updateMapTypesProperties}/>
             <StagePicker listOfStageNames={arrayOfStageNames} parentFunction={updateStagesProperties}/>
             {/* <MapPicker listOfMaps={maps} mapOptions={mapOptions} parentFunction={updateMapsProperties}/> */}
         </div>
-        }
-        </>
     )
 }
 
