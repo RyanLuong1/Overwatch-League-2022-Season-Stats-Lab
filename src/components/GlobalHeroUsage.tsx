@@ -58,8 +58,6 @@ const listOfStages: Stage[] = [
     {stageName: "Grand Finals", checkedState: true}
 ]
 
-// const listOfMaps: Map[] = getAllMaps(listOfStages)
-// console.log(listOfMaps)
 
 const listOfTeams: Team[] = [
     {teamName: "Atlanta Reign", checkedState: true},
@@ -133,11 +131,10 @@ const GlobalHeroUsage = () => {
     const [teams, updateTeams] = useState<Team[]>(listOfTeams)
     const [stages, updateStages] = useState<Stage[]>(listOfStages)
     const [maps, updateMaps] = useState<Map[]>([])
-    const [mapOptions, setMapOptions] = useState<string[]>([])
-    console.log(teams)
-    console.log(stages)
-    console.log(mapTypes)
-    console.log(maps)
+    const [mapOptions, updateMapOptions] = useState<string[]>([])
+    const [loading, setLoading] = useState(false)
+    // console.log(maps)
+    // console.log(mapOptions)
     useEffect(() => {
         // let allMaps: Map[] = []
         // const allStages = stages.map(stage => stage.stageName.replace(":", "-").replace(" ", "-").replace(" ", "").toLowerCase())
@@ -161,8 +158,10 @@ const GlobalHeroUsage = () => {
         // }
         const allStages = stages.map(stage => stage.stageName.replace(":", "-").replace(" ", "-").replace(" ", "").toLowerCase())
         let allMaps: Map[] = []
-        let fetchMaps = async () => {
+        let uniqueMaps = new Set<string>()
+        const fetchMaps = async () => {
             for await (const stage of allStages) {
+                setLoading(true)
                 const response = await fetch(`/overwatch-league/2022/${stage}/map-pools`, {
                     method: "GET",
                     mode: "cors",
@@ -179,10 +178,14 @@ const GlobalHeroUsage = () => {
                 for (const value of response) {
                     let map: Map = {mapName: value["map_name"], type: value["map_type"], stage: value["stage"], checkedState: true}
                     allMaps.push(map)
+                    uniqueMaps.add(value["map_name"])
                 }
             }
+            updateMapOptions([...mapOptions, ...uniqueMaps])
+            setLoading(false)
         }
         fetchMaps()
+        // updateMapOptions([...uniqueMaps])
         updateMaps(allMaps)
         // console.log(maps)
     }, [])
@@ -238,12 +241,14 @@ const GlobalHeroUsage = () => {
         // }
     }
     return(
+        <> { !loading &&
         <div>
             <TeamPicker listOfTeamNames={arrayOfTeamNames} parentFunction={updateTeamsProperties}/>
             <MapTypePicker listOfMapTypeNames={arrayOfMapTypesNames} parentFunction={updateMapTypesProperties}/>
             <StagePicker listOfStageNames={arrayOfStageNames} parentFunction={updateStagesProperties}/>
-            <MapPicker listOfMaps={maps} parentFunction={updateMapsProperties}/>
-        </div>
+            <MapPicker listOfMapNames={mapOptions} parentFunction={updateMapsProperties}/>
+        </div> }
+        </>
     )
 }
 
