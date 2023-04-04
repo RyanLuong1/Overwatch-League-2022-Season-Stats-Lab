@@ -5,10 +5,24 @@ import {Stage} from "./Stage"
 import { MapType } from './MapType';
 
 
-function MapPicker(props: {listOfMapNames: string[], parentFunction: Function}) {
-    // let maps: string[] = props.listOfMaps.map((map) => {return map.mapName})
-
-    const [mapNames, updateMapsNames] = useState<string[]>(props.listOfMapNames);
+function MapPicker(props: {listOfMaps: Map[], listOfStages: Stage[], listOfMapTypes: MapType[], parentFunction: Function}) {
+    const stagesList: string[] = props.listOfStages.filter((stage) => {
+        if (stage.checkedState === true) {
+            return stage.stageName
+        }
+    }).map((stage) => {return stage.stageName})
+    const mapTypesList: string[] = props.listOfMapTypes.filter((mapType) => {
+        if (mapType.checkedState === true) {
+            return mapType.typeName
+        }
+    }).map((mapType) => {return mapType.typeName})
+    let uniqueMaps: string[] = props.listOfMaps.filter((map) => {
+        if (stagesList.includes(map.stage) && mapTypesList.includes(map.type)) {
+            return map.mapName
+        }
+    }).map((map) => {return map.mapName})
+    
+    // const [mapNames, updateMapsNames] = useState<string[]>(props.listOfMapNames);
     
     const updateMapsNamesHelper = (newArray) => {
         updateMapsNames([...newArray])

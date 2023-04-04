@@ -131,8 +131,8 @@ const GlobalHeroUsage = () => {
     const [teams, updateTeams] = useState<Team[]>(listOfTeams)
     const [stages, updateStages] = useState<Stage[]>(listOfStages)
     const [maps, updateMaps] = useState<Map[]>([])
-    const [mapOptions, updateMapOptions] = useState<string[]>([])
     const [loading, setLoading] = useState(false)
+    const [mapOptions, setMapOptions] = useState([])
     // console.log(maps)
     // console.log(mapOptions)
     useEffect(() => {
@@ -178,14 +178,13 @@ const GlobalHeroUsage = () => {
                 for (const value of response) {
                     let map: Map = {mapName: value["map_name"], type: value["map_type"], stage: value["stage"], checkedState: true}
                     allMaps.push(map)
-                    uniqueMaps.add(value["map_name"])
+                    uniqueMaps.add(map.mapName)
                 }
             }
-            updateMapOptions([...mapOptions, ...uniqueMaps])
             setLoading(false)
         }
         fetchMaps()
-        // updateMapOptions([...uniqueMaps])
+        updateMapOptions([...uniqueMaps])
         updateMaps(allMaps)
         // console.log(maps)
     }, [])
@@ -246,7 +245,7 @@ const GlobalHeroUsage = () => {
             <TeamPicker listOfTeamNames={arrayOfTeamNames} parentFunction={updateTeamsProperties}/>
             <MapTypePicker listOfMapTypeNames={arrayOfMapTypesNames} parentFunction={updateMapTypesProperties}/>
             <StagePicker listOfStageNames={arrayOfStageNames} parentFunction={updateStagesProperties}/>
-            <MapPicker listOfMapNames={mapOptions} parentFunction={updateMapsProperties}/>
+            <MapPicker listOfMaps={maps} listOfStages={stages} listOfMapTypes={mapTypes} parentFunction={updateMapsProperties}/>
         </div> }
         </>
     )
