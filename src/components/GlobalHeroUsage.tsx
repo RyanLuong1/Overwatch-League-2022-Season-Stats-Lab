@@ -131,8 +131,8 @@ const GlobalHeroUsage = () => {
     const [teams, updateTeams] = useState<Team[]>(listOfTeams)
     const [stages, updateStages] = useState<Stage[]>(listOfStages)
     const [maps, updateMaps] = useState<Map[]>([])
-    const [loading, setLoading] = useState(false)
-    const [mapOptions, setMapOptions] = useState([])
+    const [loading, setLoading] = useState<boolean>(false)
+    const [mapOptions, updateMapOptions] = useState<string[]>([])
     // console.log(maps)
     // console.log(mapOptions)
     useEffect(() => {
@@ -178,13 +178,13 @@ const GlobalHeroUsage = () => {
                 for (const value of response) {
                     let map: Map = {mapName: value["map_name"], type: value["map_type"], stage: value["stage"], checkedState: true}
                     allMaps.push(map)
-                    uniqueMaps.add(map.mapName)
+                    uniqueMaps.add(value["map_name"])
                 }
             }
+            updateMapOptions([...mapOptions, ...uniqueMaps])
             setLoading(false)
         }
         fetchMaps()
-        updateMapOptions([...uniqueMaps])
         updateMaps(allMaps)
         // console.log(maps)
     }, [])

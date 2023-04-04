@@ -30,6 +30,7 @@ function TeamPicker(props: {listOfTeamNames: string[], parentFunction: Function}
             onChange={(event, newArray) => handleChange(newArray)}
             defaultValue={props.listOfTeamNames}
             style={{ width: 500 }}
+            inputValue=''
             renderInput={(params) => (
                 <TextField {...params} label={teamsNames.length === 20 ? "All" : teamsNames.length === 0 ? "" : "Multiple Values"}/>
             )}

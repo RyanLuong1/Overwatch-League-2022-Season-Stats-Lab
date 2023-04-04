@@ -30,6 +30,7 @@ function StagePicker(props: {listOfStageNames: string[], parentFunction: Functio
             onChange={(event, newArray) => handleChange(newArray)}
             defaultValue={props.listOfStageNames}
             style={{ width: 500 }}
+            inputValue=""
             renderInput={(params) => (
                 <TextField {...params} label={stagesName.length === 8 ? "All" : stagesName.length === 0 ? "" : "Multiple Values"}/>
             )}

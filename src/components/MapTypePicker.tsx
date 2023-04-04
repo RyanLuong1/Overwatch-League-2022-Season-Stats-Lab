@@ -29,6 +29,7 @@ const MapTypePicker = (props: {listOfMapTypeNames: string[], parentFunction: Fun
             onChange={(event, newArray) => handleChange(newArray)}
             defaultValue={props.listOfMapTypeNames}
             style={{ width: 500 }}
+            inputValue=''
             renderInput={(params) => (
                 <TextField {...params} label={mapTypePicks.length === 5 ? "All" : mapTypePicks.length === 0 ? "" : "Multiple Values"}/>
             )}
