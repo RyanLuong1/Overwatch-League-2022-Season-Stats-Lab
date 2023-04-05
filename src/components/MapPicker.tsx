@@ -43,7 +43,7 @@ function MapPicker(props: {listOfMaps: Map[], listOfStages: Stage[], listOfMapTy
             <Autocomplete
             freeSolo
             multiple
-            limitTags={2}
+            forcePopupIcon={true}
             id="checkboxes-tags-demo"
             options={[...uniqueMaps]}
             disableCloseOnSelect
