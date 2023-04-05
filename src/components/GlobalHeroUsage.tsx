@@ -209,7 +209,19 @@ const GlobalHeroUsage = () => {
             }
             return {...mapType, checkedState: true}
         }))
-        console.log(mapTypes)
+
+        const updatedMapTypesList: string[] = mapTypes.filter((mapType) => {
+            if (mapType.checkedState === true) {
+                return mapType.typeName
+            }
+        }).map((mapType) => {return mapType.typeName})
+
+        updateMaps(prevState => prevState.map((map) => {
+            if (!updatedMapTypesList.includes(map.stage)) {
+                return {...map, checkedState: false}
+            }
+            return {...map, checkedState: true}
+        }))
     }
 
     const updateStagesProperties = (stagesList: string[]): void => {
@@ -218,6 +230,17 @@ const GlobalHeroUsage = () => {
                 return {...stage, checkedState: false}
             }
             return {...stage, checkedState: true}
+        }))
+        const updatedStagesList: string[] = stages.filter((stage) => {
+            if (stage.checkedState === true) {
+                return stage.stageName
+            }
+        }).map((stage) => {return stage.stageName})
+        updateMaps(prevState => prevState.map((map) => {
+            if (!updatedStagesList.includes(map.stage)) {
+                return {...map, checkedState: false}
+            }
+            return {...map, checkedState: true}
         }))
         console.log(stages)
     }
@@ -233,12 +256,14 @@ const GlobalHeroUsage = () => {
                 return mapType.typeName
             }
         }).map((mapType) => {return mapType.typeName})
-        // updateMaps(prevState => prevState.map((map) => {
-        //     if (!mapsList.includes(map.mapName) || ) {
-                
-        //     }
-        // }
+        updateMaps(prevState => prevState.map((map) => {
+            if (!mapsList.includes(map.mapName) || !stagesList.includes(map.stage) || !mapTypesList.includes(map.type)) {
+                return {...map, checkedState: false}
+            }
+            return {...map, checkedState: true}
+        }))
     }
+
     return(
         <> { !loading &&
         <div>
