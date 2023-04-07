@@ -7,36 +7,9 @@ import {Map} from "./Map"
 import TeamPicker from './TeamPicker.tsx';
 import StagePicker from './StagePicker.tsx';
 import MapPicker from './MapPicker.tsx';
-import { AllInbox } from '@mui/icons-material';
+import { HeroUsage } from './HeroUsage';
 
 console.log("First")
-
-
-
-
-// const getAllMaps = (listOfStages: Stage[]) => {
-//     let allMaps: Map[] = []
-//     const allStages = listOfStages.map(stage => stage.stageName.replace(":", "-").replace(" ", "-").replace(" ", "").toLowerCase())
-//     for (const stage of allStages) {
-//             const response = fetch(`/overwatch-league/2022/${stage}/map-pools`, {
-//                 method: "GET",
-//                 mode: "cors",
-//                 cache: "no-cache",
-//                 credentials: "same-origin",
-//             }).then((response) => {
-//                 if (!response.ok) {
-//                     throw new Error(`Network response was not OK ${stage}`)
-//                 }
-//                 return response.json()
-//             }).then((data) => {
-//                 for (const value of data) {
-//                     let map: Map = {mapName: value["map_name"], type: value["map_type"], stage: value["stage"], checkedState: true}
-//                     allMaps.push(map)
-//                 }
-//             })
-//     }
-//     return allMaps
-// }
 
 
 const listOfMapTypes: MapType[] = [
@@ -97,34 +70,6 @@ const arrayOfStageNames: string[] = listOfStages.map((stage) =>
 )
 
 
-// const createMapOptions = (listOfMaps: Map[], listOfStages: Stage[], listOfMapTypes: MapType[]): string[] => {
-//     const filterStages = listOfStages.filter((stage) => {
-//         return stage.checkedState !== false
-//     })
-//     const filterMapTypes = listOfMapTypes.filter((mapType) => {
-//         return mapType.checkedState !== false
-//     })
-//     // console.log(filterStages)
-//     // console.log(filterMapTypes)
-//     // console.log(listOfMaps)
-//     let mapsObjects: Map[] = []
-//     for (const stage of filterStages) {
-//         let filterMaps: Map[] = listOfMaps.filter((map) => {
-//             return map.mapName === stage.stageName.replace(":", "-").replace(" ", "-").replace(" ", "").toLowerCase()
-//         }).map((map) => {return map})
-//         mapsObjects.push(...filterMaps)
-//     }
-//     let result: Map[] = []
-//     for (const mapType of filterMapTypes) {
-//         let filterMaps: Map[] = mapsObjects.filter((map) => {
-//             return map.type === mapType.typeName
-//         })
-//         result.push(...filterMaps)
-//     }
-//     const allMaps: string[] = result.map((map) => {return map.mapName})
-//     return allMaps
-// }
-
 
 const GlobalHeroUsage = () => {
     const [mapTypes, updateMapTypes] = useState<MapType[]>(listOfMapTypes)
@@ -132,67 +77,75 @@ const GlobalHeroUsage = () => {
     const [stages, updateStages] = useState<Stage[]>(listOfStages)
     const [maps, updateMaps] = useState<Map[]>([])
     const [loading, setLoading] = useState<boolean>(false)
-    const [mapOptions, updateMapOptions] = useState<string[]>([])
+    const [leagueUsage, updateLeagueUsage] = useState<HeroUsage[]>([])
     // console.log(maps)
     // console.log(mapOptions)
     useEffect(() => {
-        // let allMaps: Map[] = []
-        // const allStages = stages.map(stage => stage.stageName.replace(":", "-").replace(" ", "-").replace(" ", "").toLowerCase())
-        // for (const stage of allStages) {
-        //         const response = fetch(`/overwatch-league/2022/${stage}/map-pools`, {
-        //             method: "GET",
-        //             mode: "cors",
-        //             cache: "no-cache",
-        //             credentials: "same-origin",
-        //         }).then((response) => {
-        //             if (!response.ok) {
-        //                 throw new Error(`Network response was not OK ${stage}`)
-        //             }
-        //             return response.json()
-        //         }).then((data) => {
-        //             for (const value of data) {
-        //                 let map: Map = {mapName: value["map_name"], type: value["map_type"], stage: value["stage"], checkedState: true}
-        //                 allMaps.push(map)
-        //             }
-        //         })
-        // }
         const allStages = stages.map(stage => stage.stageName.replace(":", "-").replace(" ", "-").replace(" ", "").toLowerCase())
         let allMaps: Map[] = []
-        let uniqueMaps = new Set<string>()
+        let allHeroesUsage: HeroUsage[] = []
         const fetchMaps = async () => {
             for await (const stage of allStages) {
                 setLoading(true)
-                const response = await fetch(`/overwatch-league/2022/${stage}/map-pools`, {
+                const mapPoolsResponse = await fetch(`/overwatch-league/2022/${stage}/map-pools`, {
                     method: "GET",
                     mode: "cors",
                     cache: "no-cache",
                     credentials: "same-origin",
                 }).then((response) => {
                     if (!response.ok) {
-                        throw new Error(`Network response was not OK ${stage}`)
+                        throw new Error(`Network response was not OK: ${stage}`)
                     }
                     return response.json()
                 }).catch((error) => {
                     console.error("There has been a problem with your fetch operation: ", error)
                 })
-                for (const value of response) {
-                    let map: Map = {mapName: value["map_name"], type: value["map_type"], stage: value["stage"], checkedState: true}
+
+                const heroUsageResponse = await fetch(`/overwatch-league/2022/${stage}/heroes-usage`, {
+                    method: "GET",
+                    mode: "cors",
+                    cache: "no-cache",
+                    credentials: "same-origin",
+                }).then((response) => {
+                    if (!response.ok) {
+                        throw new Error(`Network response was not OK: ${stage}`)
+                    }
+                    return response.json()
+                }).catch((error) => {
+                    console.error("There has been a problem with your fetch operation: ", error)
+                })
+
+                for (const value of mapPoolsResponse) {
+                    const mapName = value["map_name"]
+                    const mapType = value["map_type"]
+                    const stage = value["stage"]
+                    const checkedState = true
+                    let map: Map = {mapName: mapName, type: mapType, stage: stage, checkedState: checkedState}
                     allMaps.push(map)
-                    uniqueMaps.add(value["map_name"])
+                }
+
+                for (const value of heroUsageResponse) {
+                    const hero = value["hero_name"]
+                    const usage = Number(value["usage"])
+                    const check = leagueUsage.some(object => object.hasOwnProperty(hero))
+                    if (check) {
+                        const index = allHeroesUsage.findIndex(object => {return object.heroName === hero})
+                        allHeroesUsage[index].usage += usage
+                    }
+                    else {
+                        let heroUsage: HeroUsage = {heroName: hero, usage: usage}
+                        allHeroesUsage.push(heroUsage)
+                    }
                 }
             }
-            updateMapOptions([...mapOptions, ...uniqueMaps])
             setLoading(false)
         }
         fetchMaps()
         updateMaps(allMaps)
-        // console.log(maps)
+        updateLeagueUsage(allHeroesUsage)
+        console.log(leagueUsage)
     }, [])
     const updateTeamsProperties = (teamsList: string[]): void => {
-        // console.log(teamsList)
-        // for (let team of teams) {
-        //     console
-        // }
         updateTeams(prevState => prevState.map((team) => {
             if (!teamsList.includes(team.teamName)) {
                 return {...team, checkedState: false}
