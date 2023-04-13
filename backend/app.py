@@ -42,7 +42,7 @@ def get_map_pools_from_stage(stage):
 def get_hero_usage_from_stage(stage):
     if (request.method == "GET"):
         s3 = get_s3()
-        heroes_usage_file_name = f"heroes-usage/{stage}-global-heroes-usage.csv"
+        heroes_usage_file_name = f"heroes-usage/{stage}-heroes-usage.csv"
         heroes_usage_file = s3.Object(bucket_name="overwatch-league-bucket", key=heroes_usage_file_name)
         response = heroes_usage_file.get()
         hero_usage_csv_format = response['Body'].read().decode("utf-8")

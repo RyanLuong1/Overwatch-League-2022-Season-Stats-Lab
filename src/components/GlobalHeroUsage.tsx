@@ -8,6 +8,7 @@ import TeamPicker from './TeamPicker.tsx';
 import StagePicker from './StagePicker.tsx';
 import MapPicker from './MapPicker.tsx';
 import { HeroUsage } from './HeroUsage';
+import LeagueUsage from './LeagueUsage.tsx';
 
 console.log("First")
 
@@ -80,6 +81,7 @@ const GlobalHeroUsage = () => {
     const [leagueUsage, updateLeagueUsage] = useState<HeroUsage[]>([])
     // console.log(maps)
     // console.log(mapOptions)
+    console.log(leagueUsage)
     useEffect(() => {
         const allStages = stages.map(stage => stage.stageName.replace(":", "-").replace(" ", "-").replace(" ", "").toLowerCase())
         let allMaps: Map[] = []
@@ -116,18 +118,18 @@ const GlobalHeroUsage = () => {
                 })
 
                 for (const value of mapPoolsResponse) {
-                    const mapName = value["map_name"]
-                    const mapType = value["map_type"]
-                    const stage = value["stage"]
-                    const checkedState = true
+                    const mapName: string = value["map_name"]
+                    const mapType: string = value["map_type"]
+                    const stage: string = value["stage"]
+                    const checkedState: boolean = true
                     let map: Map = {mapName: mapName, type: mapType, stage: stage, checkedState: checkedState}
                     allMaps.push(map)
                 }
 
                 for (const value of heroUsageResponse) {
-                    const hero = value["hero_name"]
-                    const usage = Number(value["usage"])
-                    const check = leagueUsage.some(object => object.hasOwnProperty(hero))
+                    const hero: string = value["hero_name"]
+                    const usage: number = Number(value["total_times_played"])
+                    const check: boolean = allHeroesUsage.some(object => object.heroName === hero)
                     if (check) {
                         const index = allHeroesUsage.findIndex(object => {return object.heroName === hero})
                         allHeroesUsage[index].usage += usage
@@ -143,7 +145,7 @@ const GlobalHeroUsage = () => {
         fetchMaps()
         updateMaps(allMaps)
         updateLeagueUsage(allHeroesUsage)
-        console.log(leagueUsage)
+        // console.log(leagueUsage)
     }, [])
     const updateTeamsProperties = (teamsList: string[]): void => {
         updateTeams(prevState => prevState.map((team) => {
@@ -152,7 +154,7 @@ const GlobalHeroUsage = () => {
             }
             return {...team, checkedState: true}
         }))
-        console.log(teams)
+        // console.log(teams)
     }
 
     const updateMapTypesProperties = (mapTypesList: string[]): void => {
@@ -195,7 +197,7 @@ const GlobalHeroUsage = () => {
             }
             return {...map, checkedState: true}
         }))
-        console.log(stages)
+        // console.log(stages)
     }
 
     const updateMapsProperties = (mapsList: string[]): void => {
@@ -224,6 +226,7 @@ const GlobalHeroUsage = () => {
             <MapTypePicker listOfMapTypeNames={arrayOfMapTypesNames} parentFunction={updateMapTypesProperties}/>
             <StagePicker listOfStageNames={arrayOfStageNames} parentFunction={updateStagesProperties}/>
             <MapPicker listOfMaps={maps} listOfStages={stages} listOfMapTypes={mapTypes} parentFunction={updateMapsProperties}/>
+            <LeagueUsage leagueUsage={leagueUsage}/>
         </div> }
         </>
     )
