@@ -28,18 +28,16 @@ def get_map_pools_from_stage(stage):
         buffer = StringIO(map_pool_csv_format)
         reader = csv.DictReader(buffer)
         all_maps = list(reader)
-        # print(map_pool)
+        # print(all_maps)
         map_pools = []
         for map in all_maps:
             map_pool = {"map_name": map["map_name"], "map_type": map["map_type"], "stage": stage}
             map_pools.append(map_pool)
-        json_response = jsonify(map_pools)
-        print(map_pools)
         # json_response.headers.add("Access-Control-Allow-Origin", "*")
-        return json_response
+        return map_pools, 200
 
 @app.route('/overwatch-league/2022/<string:stage>/heroes-usage', methods=["GET"])
-def get_hero_usage_from_stage(stage):
+def get_heroes_usage_from_stage(stage):
     if (request.method == "GET"):
         s3 = get_s3()
         heroes_usage_file_name = f"heroes-usage/{stage}-heroes-usage.csv"
@@ -50,9 +48,22 @@ def get_hero_usage_from_stage(stage):
         reader = csv.DictReader(buffer)
         heroes_usage = list(reader)
         return heroes_usage, 200
+
+@app.route('/overwatch-league/2022/<string:stage>/heroes-total-played-time', methods=["GET"])
+def get_heroes_total_played_time_from_stage(stage):
+    if (request.method == "GET"):
+        s3 = get_s3()
+        heroes_total_played_time_file_name = f"total-played-time/{stage}-heroes-total-played-time.csv"
+        heroes_total_played_time_file = s3.Object(bucket_name="overwatch-league-bucket", key=heroes_total_played_time_file_name)
+        response = heroes_total_played_time_file.get()
+        heroes_total_played_time_csv_format = response['Body'].read().decode("utf-8")
+        buffer = StringIO(heroes_total_played_time_csv_format)
+        reader = csv.DictReader(buffer)
+        heroes_total_played_time = list(reader)
+        return heroes_total_played_time, 200
     
 
-
+# @app.route('/overwatch-league/2022/<string:stage>/map-count')
 
 
     # map_pool_df = pd.read_csv(StringIO(lines["Body"].read().decode('utf-8')))

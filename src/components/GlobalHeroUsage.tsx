@@ -7,7 +7,7 @@ import {Map} from "./Map"
 import TeamPicker from './TeamPicker.tsx';
 import StagePicker from './StagePicker.tsx';
 import MapPicker from './MapPicker.tsx';
-import { HeroUsage } from './HeroUsage';
+import { PickRate } from './PickRate.js';
 import LeagueUsage from './LeagueUsage.tsx';
 
 console.log("First")
@@ -78,14 +78,14 @@ const GlobalHeroUsage = () => {
     const [stages, updateStages] = useState<Stage[]>(listOfStages)
     const [maps, updateMaps] = useState<Map[]>([])
     const [loading, setLoading] = useState<boolean>(false)
-    const [leagueUsage, updateLeagueUsage] = useState<HeroUsage[]>([])
+    const [opponentPickRates, updateOpponentPickRates] = useState<PickRate[]>([])
+    console.log(opponentPickRates)
     // console.log(maps)
     // console.log(mapOptions)
-    console.log(leagueUsage)
     useEffect(() => {
         const allStages = stages.map(stage => stage.stageName.replace(":", "-").replace(" ", "-").replace(" ", "").toLowerCase())
         let allMaps: Map[] = []
-        let allHeroesUsage: HeroUsage[] = []
+        let allPickRates: PickRate[] = []
         const fetchMaps = async () => {
             for await (const stage of allStages) {
                 setLoading(true)
@@ -117,6 +117,20 @@ const GlobalHeroUsage = () => {
                     console.error("There has been a problem with your fetch operation: ", error)
                 })
 
+                const heroesTotalPlayedTime = await fetch(`/overwatch-league/2022/${stage}/heroes-total-played-time`, {
+                    method: "GET",
+                    mode: "cors",
+                    cache: "no-cache",
+                    credentials: "same-origin",
+                }).then((response) => {
+                    if (!response.ok) {
+                        throw new Error(`Network response was not OK: ${stage}`)
+                    }
+                    return response.json()
+                }).catch((error) => {
+                    console.error("There has been a problem with your fetch operation: ", error)
+                })
+
                 for (const value of mapPoolsResponse) {
                     const mapName: string = value["map_name"]
                     const mapType: string = value["map_type"]
@@ -125,26 +139,40 @@ const GlobalHeroUsage = () => {
                     let map: Map = {mapName: mapName, type: mapType, stage: stage, checkedState: checkedState}
                     allMaps.push(map)
                 }
-
+                let totalUsage = 0
                 for (const value of heroUsageResponse) {
                     const hero: string = value["hero_name"]
                     const usage: number = Number(value["total_times_played"])
-                    const check: boolean = allHeroesUsage.some(object => object.heroName === hero)
+                    const check: boolean = allPickRates.some(object => object.heroName === hero)
                     if (check) {
-                        const index = allHeroesUsage.findIndex(object => {return object.heroName === hero})
-                        allHeroesUsage[index].usage += usage
+                        const index = allPickRates.findIndex(object => {return object.heroName === hero})
+                        allPickRates[index].usage += usage
                     }
                     else {
-                        let heroUsage: HeroUsage = {heroName: hero, usage: usage}
-                        allHeroesUsage.push(heroUsage)
+                        let pickRate: PickRate = {heroName: hero, usage: usage, playedTime: 0, pickRate: 0}
+                        allPickRates.push(pickRate)
                     }
+                    totalUsage += usage
+                }
+                let totalTime = 0
+                for (const value of heroesTotalPlayedTime) {
+                    const playedTime: number = Number(value["amount"])
+                    const hero: string = value["hero_name"]
+                    const index = allPickRates.findIndex(object => {return object.heroName === hero})
+                    allPickRates[index].playedTime += playedTime
+                    totalTime += playedTime
+                }
+                console.log(totalTime)
+                for (const value of allPickRates) {
+                    const pickRate: number = (value["usage"] / totalUsage)  / (value["playedTime"] / totalTime)
+                    value["pickRate"] = pickRate
                 }
             }
             setLoading(false)
         }
         fetchMaps()
         updateMaps(allMaps)
-        updateLeagueUsage(allHeroesUsage)
+        updateOpponentPickRates(allPickRates)
         // console.log(leagueUsage)
     }, [])
     const updateTeamsProperties = (teamsList: string[]): void => {
@@ -226,7 +254,7 @@ const GlobalHeroUsage = () => {
             <MapTypePicker listOfMapTypeNames={arrayOfMapTypesNames} parentFunction={updateMapTypesProperties}/>
             <StagePicker listOfStageNames={arrayOfStageNames} parentFunction={updateStagesProperties}/>
             <MapPicker listOfMaps={maps} listOfStages={stages} listOfMapTypes={mapTypes} parentFunction={updateMapsProperties}/>
-            <LeagueUsage leagueUsage={leagueUsage}/>
+            <LeagueUsage opponentPickRates={opponentPickRates}/>
         </div> }
         </>
     )
